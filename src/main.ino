@@ -54,15 +54,26 @@ void setup() {
   irrecv.enableIRIn(); // Start the receiver
   Serial.println("Enabled IRin");
 
+  // enable the oled screen
+  Serial.println("Enabling display");
   pinMode(25,OUTPUT);
   pinMode(33,OUTPUT);
   u8g2.begin();
   u8g2.setFont(u8g2_font_amstrad_cpc_extended_8f);
   u8g2.setCursor(0,cursor_loc);
+  Serial.println("Enabled displayt");
 
   //SPI.begin();
+  Serial.println("Enabling RFID");
   SPI.begin(18, 19, 23, SS_PIN); // sck, miso, mosi, ss (ss can be any GPIO)
-  mfrc522.PCD_Init();	// Init MFRC522 card
+  mfrc522.PCD_Init();	// Init MFRC522 card reader
+  
+  if (mfrc522.PCD_PerformSelfTest()) {
+    Serial.println("self check passed");
+  } else {
+    Serial.println("self check failed");
+  }
+  Serial.println("Enabled RFID");
 
   delay(2000);
   Serial.println("Recipie");  // print out the recipie for troubleshooting
@@ -162,6 +173,7 @@ unsigned long getID(){
   hex_num += mfrc522.uid.uidByte[2] <<  8;
   hex_num += mfrc522.uid.uidByte[3];
   mfrc522.PICC_HaltA(); // Stop reading
+  Serial.println("Found card " + hex_num);
   return hex_num;
 }
 
